@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoleCraft — Custom Footwear, Crafted for You</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#F5F0E8; --black:#0A0A08; --leather:#8B5E3C;
+  --gold:#C9A84C; --stone:#D4C9B8; --dark-stone:#4A453E;
+  --font-display:'Cormorant Garamond',serif; --font-mono:'DM Mono',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--black);font-family:var(--font-mono);overflow-x:hidden;cursor:none}
+
+/* ── CURSOR ── */
+.cursor{position:fixed;width:8px;height:8px;background:var(--black);border-radius:50%;pointer-events:none;z-index:10001;mix-blend-mode:exclusion}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid var(--black);border-radius:50%;pointer-events:none;z-index:10000;transition:all .18s ease;mix-blend-mode:exclusion}
+
+/* ── DISCLAIMER POPUP ── */
+#disclaimer-overlay{
+  position:fixed;inset:0;background:rgba(10,10,8,0.88);z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);padding:20px;
+}
+#disclaimer-box{
+  background:var(--cream);max-width:560px;width:100%;padding:56px 52px;
+  position:relative;border-top:4px solid var(--gold);
+  animation:popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.disc-badge{
+  display:inline-block;background:var(--black);color:var(--gold);
+  font-family:var(--font-mono);font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:7px 14px;margin-bottom:28px;
+}
+.disc-title{
+  font-family:var(--font-display);font-size:2.2rem;font-weight:600;
+  line-height:1.15;margin-bottom:20px;color:var(--black);
+}
+.disc-title em{font-style:italic;color:var(--leather)}
+.disc-body{
+  font-size:.76rem;line-height:2;color:var(--dark-stone);
+  letter-spacing:.04em;margin-bottom:32px;
+}
+.disc-body strong{color:var(--black)}
+.disc-checklist{
+  list-style:none;display:flex;flex-direction:column;gap:10px;
+  margin-bottom:36px;
+}
+.disc-checklist li{
+  display:flex;align-items:flex-start;gap:12px;
+  font-size:.7rem;color:var(--dark-stone);letter-spacing:.06em;
+}
+.disc-check{
+  width:18px;height:18px;background:var(--black);color:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;flex-shrink:0;margin-top:1px;
+}
+.disc-btn{
+  width:100%;background:var(--black);color:var(--cream);border:none;
+  padding:18px;font-family:var(--font-mono);font-size:.72rem;
+  letter-spacing:.18em;text-transform:uppercase;cursor:none;
+  transition:background .2s,transform .2s;
+}
+.disc-btn:hover{background:var(--leather);transform:translateY(-2px)}
+.disc-footer{
+  margin-top:16px;font-size:.6rem;color:var(--stone);
+  text-align:center;letter-spacing:.1em;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 60px;transition:background .3s ease,padding .3s ease;
+}
+nav.scrolled{background:rgba(245,240,232,0.96);backdrop-filter:blur(12px);padding:16px 60px;border-bottom:1px solid var(--stone)}
+.nav-logo{font-family:var(--font-display);font-size:1.7rem;font-weight:600;letter-spacing:.04em;color:var(--black);text-decoration:none}
+.nav-logo span{color:var(--leather);font-style:italic}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center}
+.nav-links a{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--dark-stone);transition:color .2s;cursor:none}
+.nav-links a:hover{color:var(--leather)}
+.nav-cta{background:var(--black);color:var(--cream)!important;padding:10px 22px;transition:background .2s!important}
+.nav-cta:hover{background:var(--leather)!important}
+.hamburger{display:none;background:none;border:none;cursor:none;font-size:1.4rem;color:var(--black)}
+/* mobile menu */
+.mobile-menu{
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+  background:var(--black);z-index:200;flex-direction:column;
+  align-items:center;justify-content:center;gap:36px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-family:var(--font-display);font-size:2.2rem;color:var(--cream);text-decoration:none;font-weight:300;cursor:none}
+.mobile-menu a:hover{color:var(--gold)}
+.mobile-close{position:absolute;top:28px;right:28px;background:none;border:none;font-size:2rem;color:var(--cream);cursor:none}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── SHARED SECTION STYLES ── */
+section{padding:120px 60px}
+.section-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--leather);margin-bottom:24px;display:flex;align-items:center;gap:14px}
+.section-label::before{content:'';display:inline-block;width:24px;height:1px;background:var(--leather)}
+.section-title{font-family:var(--font-display);font-size:clamp(2.4rem,4vw,4rem);font-weight:300;line-height:1.1;margin-bottom:24px}
+.section-title em{font-style:italic;color:var(--leather)}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.fade-delay-1{transition-delay:.1s}.fade-delay-2{transition-delay:.2s}
+.fade-delay-3{transition-delay:.3s}.fade-delay-4{transition-delay:.4s}
+
+/* ── HOME ── */
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;position:relative}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:140px 60px 80px;position:relative;z-index:2}
+.hero-eyebrow{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--leather);margin-bottom:28px;display:flex;align-items:center;gap:14px}
+.hero-eyebrow::before{content:'';display:inline-block;width:36px;height:1px;background:var(--leather)}
+.hero-title{font-family:var(--font-display);font-size:clamp(3.8rem,6vw,6.5rem);font-weight:300;line-height:1.02;letter-spacing:-.01em;margin-bottom:32px}
+.hero-title em{font-style:italic;font-weight:300;color:var(--leather);display:block}
+.hero-sub{font-size:.78rem;letter-spacing:.06em;color:var(--dark-stone);line-height:1.9;max-width:380px;margin-bottom:52px}
+.hero-actions{display:flex;gap:18px;align-items:center}
+.btn-primary{background:var(--black);color:var(--cream);padding:16px 36px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;border:none;text-decoration:none;display:inline-block;transition:background .2s,transform .2s;cursor:none}
+.btn-primary:hover{background:var(--leather);transform:translateY(-2px)}
+.btn-outline{border:1px solid var(--dark-stone);color:var(--dark-stone);padding:15px 36px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;display:inline-block;transition:all .2s;cursor:none}
+.btn-outline:hover{border-color:var(--leather);color:var(--leather)}
+.hero-stats{display:flex;gap:48px;margin-top:72px;padding-top:36px;border-top:1px solid var(--stone)}
+.stat{display:flex;flex-direction:column;gap:4px}
+.stat-num{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--leather)}
+.stat-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dark-stone)}
+.hero-right{position:relative;background:var(--black);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-badge{position:absolute;bottom:60px;left:-28px;background:var(--gold);color:var(--black);padding:16px 24px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;transform:rotate(-3deg);z-index:10;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(-3deg) translateY(-10px)}}
+.hero-scroll{position:absolute;bottom:40px;left:60px;display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dark-stone);z-index:5}
+.scroll-line{width:40px;height:1px;background:var(--dark-stone);position:relative;overflow:hidden}
+.scroll-line::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--leather);animation:scrollline 2s ease-in-out infinite}
+@keyframes scrollline{0%{left:-100%}100%{left:100%}}
+
+/* MARQUEE */
+.marquee-strip{background:var(--leather);color:var(--cream);padding:16px 0;overflow:hidden}
+.marquee-inner{display:flex;white-space:nowrap;animation:marquee 24s linear infinite}
+.marquee-inner span{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;padding:0 52px}
+.marquee-inner span::before{content:'✦';margin-right:52px;font-size:.55rem}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ABOUT SECTION (home) */
+#about{background:var(--black);color:var(--cream)}
+#about .section-label{color:var(--gold)}
+#about .section-label::before{background:var(--gold)}
+#about .section-title em{color:var(--gold)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:64px}
+.about-text p{font-size:.82rem;line-height:2;color:var(--stone);margin-bottom:24px;letter-spacing:.04em}
+.about-values{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:40px}
+.value-card{background:rgba(255,255,255,.04);padding:32px 28px;border:1px solid rgba(255,255,255,.08);transition:background .2s}
+.value-card:hover{background:rgba(255,255,255,.08)}
+.value-num{font-family:var(--font-display);font-size:2.2rem;font-weight:300;color:var(--gold);margin-bottom:10px}
+.value-title{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cream);margin-bottom:8px}
+.value-desc{font-size:.72rem;color:var(--stone);line-height:1.7;letter-spacing:.03em}
+.about-image-frame{aspect-ratio:4/5;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.about-image-frame::before{content:'';position:absolute;inset:16px;border:1px solid rgba(201,168,76,.2)}
+.about-tag{position:absolute;top:-16px;right:-16px;background:var(--gold);color:var(--black);padding:12px 20px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase}
+
+/* SERVICES */
+#services{background:var(--cream)}
+.services-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-bottom:80px}
+.services-desc{font-size:.8rem;line-height:2;color:var(--dark-stone);letter-spacing:.04em;padding-top:60px}
+.process-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.step-card{background:var(--black);color:var(--cream);padding:48px 36px;position:relative;overflow:hidden;transition:transform .3s ease}
+.step-card:hover{transform:translateY(-6px)}
+.step-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--leather);transform:scaleX(0);transition:transform .3s ease}
+.step-card:hover::before{transform:scaleX(1)}
+.step-num{font-family:var(--font-display);font-size:5rem;font-weight:300;color:rgba(255,255,255,.07);position:absolute;top:16px;right:24px;line-height:1}
+.step-icon{font-size:2rem;margin-bottom:24px;display:block}
+.step-title{font-family:var(--font-display);font-size:1.4rem;font-weight:400;margin-bottom:14px;color:var(--cream)}
+.step-desc{font-size:.72rem;line-height:1.8;color:var(--stone);letter-spacing:.04em}
+
+/* OFFERINGS */
+#offerings{background:var(--stone);padding:120px 60px}
+.offerings-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:64px}
+.offering-card{background:var(--cream);padding:48px 32px;border-top:3px solid transparent;transition:border-color .3s,transform .3s;cursor:none}
+.offering-card:hover{border-color:var(--leather);transform:translateY(-4px)}
+.offering-icon{font-size:2.4rem;margin-bottom:28px;display:block}
+.offering-name{font-family:var(--font-display);font-size:1.5rem;font-weight:400;margin-bottom:14px}
+.offering-desc{font-size:.72rem;line-height:1.9;color:var(--dark-stone);letter-spacing:.04em;margin-bottom:24px}
+.offering-tag{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--leather);border-top:1px solid var(--stone);padding-top:18px}
+
+/* VISION */
+#vision{background:var(--cream);padding:120px 60px}
+.vision-grid{display:grid;grid-template-columns:2fr 1fr;gap:80px;margin-top:64px}
+.vision-quote{font-family:var(--font-display);font-size:clamp(1.6rem,2.5vw,2.6rem);font-weight:300;line-height:1.4;color:var(--black);letter-spacing:-.01em}
+.vision-quote em{font-style:italic;color:var(--leather)}
+.vision-points{display:flex;flex-direction:column;gap:28px}
+.vision-point{padding-left:20px;border-left:2px solid var(--stone);transition:border-color .2s}
+.vision-point:hover{border-color:var(--leather)}
+.vision-point h4{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--black);margin-bottom:8px}
+.vision-point p{font-size:.72rem;color:var(--dark-stone);line-height:1.8;letter-spacing:.04em}
+
+/* PREBOOK */
+#prebook{background:var(--black);position:relative;overflow:hidden;padding:120px 60px}
+#prebook::before{content:'PRE';position:absolute;font-family:var(--font-display);font-size:28vw;font-weight:600;color:rgba(255,255,255,.025);top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;pointer-events:none;letter-spacing:-.04em}
+.prebook-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;position:relative;z-index:2}
+.prebook-info .section-label{color:var(--gold)}
+.prebook-info .section-label::before{background:var(--gold)}
+.prebook-info .section-title{color:var(--cream)}
+.prebook-info .section-title em{color:var(--gold)}
+.prebook-desc{font-size:.8rem;line-height:2;color:var(--stone);letter-spacing:.04em;margin-bottom:40px}
+.prebook-perks{list-style:none;display:flex;flex-direction:column;gap:16px}
+.prebook-perks li{display:flex;align-items:flex-start;gap:14px;font-family:var(--font-mono);font-size:.72rem;color:var(--stone);letter-spacing:.06em}
+.perk-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;margin-top:6px;flex-shrink:0}
+.prebook-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:52px 48px}
+.form-title{font-family:var(--font-display);font-size:1.8rem;font-weight:300;color:var(--cream);margin-bottom:36px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.form-group label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone)}
+.form-group input,.form-group select,.form-group textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--cream);padding:14px 18px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;outline:none;transition:border-color .2s;cursor:none;resize:none}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold)}
+.form-group select option{background:#1a1a14}
+.form-group textarea{height:100px}
+.form-submit{width:100%;background:var(--gold);color:var(--black);border:none;padding:18px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;cursor:none;transition:background .2s,transform .2s;margin-top:8px}
+.form-submit:hover{background:#e0be6a;transform:translateY(-2px)}
+.form-note{font-size:.62rem;color:var(--dark-stone);letter-spacing:.08em;margin-top:16px;text-align:center}
+.success-msg{display:none;background:rgba(201,168,76,.1);border:1px solid var(--gold);padding:24px;text-align:center;color:var(--gold);font-family:var(--font-mono);font-size:.75rem;letter-spacing:.1em;margin-top:16px}
+
+/* CONTACT */
+#contact{background:var(--black);color:var(--cream)}
+#contact .section-label{color:var(--gold)}
+#contact .section-label::before{background:var(--gold)}
+#contact .section-title{color:var(--cream)}
+#contact .section-title em{color:var(--gold)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;margin-top:64px;align-items:start}
+.contact-info-desc{font-size:.8rem;line-height:2;color:var(--stone);letter-spacing:.04em;margin-bottom:48px}
+.contact-channels{display:flex;flex-direction:column;gap:24px}
+.channel{display:flex;align-items:flex-start;gap:20px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.08)}
+.channel-icon{font-size:1.4rem;flex-shrink:0}
+.channel-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dark-stone);margin-bottom:4px}
+.channel-value{font-size:.82rem;color:var(--cream);letter-spacing:.06em}
+.contact-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:48px}
+.contact-form .form-title{font-size:1.5rem}
+.contact-form input,.contact-form textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--cream);padding:14px 18px;font-family:var(--font-mono);font-size:.75rem;letter-spacing:.06em;outline:none;transition:border-color .2s;width:100%;cursor:none;resize:none}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--gold)}
+.contact-form textarea{height:120px}
+.contact-form .form-group{margin-bottom:20px}
+.contact-form label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);display:block;margin-bottom:8px}
+.contact-submit{width:100%;background:var(--gold);color:var(--black);border:none;padding:18px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;cursor:none;transition:background .2s,transform .2s}
+.contact-submit:hover{background:#e0be6a;transform:translateY(-2px)}
+
+/* ── TEAM PAGE ── */
+.page-hero{padding:180px 60px 80px;background:var(--black);color:var(--cream);text-align:center}
+.page-hero .section-label{justify-content:center}
+.page-hero .section-label::before{display:none}
+.page-hero .section-title{color:var(--cream)}
+.page-hero .section-title em{color:var(--gold)}
+.page-hero p{font-size:.8rem;line-height:2;color:var(--stone);max-width:580px;margin:0 auto}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:0;padding:4px 60px 80px;background:var(--black)}
+.team-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:48px 36px;text-align:center;transition:background .25s,transform .25s}
+.team-card:hover{background:rgba(255,255,255,.08);transform:translateY(-5px)}
+.team-avatar{width:90px;height:90px;border-radius:50%;background:var(--leather);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:2rem;color:var(--cream);margin:0 auto 24px;font-style:italic;font-weight:600;border:2px solid rgba(201,168,76,.3)}
+.team-name{font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--cream);margin-bottom:6px}
+.team-role{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:18px}
+.team-bio{font-size:.72rem;line-height:1.9;color:var(--stone);letter-spacing:.04em}
+.team-divider{background:var(--stone);padding:80px 60px}
+.team-divider-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.team-culture-text .section-title em{color:var(--leather)}
+.team-culture-text p{font-size:.78rem;line-height:2;color:var(--dark-stone);margin-top:20px;letter-spacing:.04em}
+.culture-stats{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.culture-stat{background:var(--cream);padding:28px 24px;text-align:center}
+.culture-stat-num{font-family:var(--font-display);font-size:2.8rem;font-weight:300;color:var(--leather)}
+.culture-stat-label{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dark-stone);margin-top:6px}
+.advisors-section{background:var(--cream);padding:80px 60px}
+.advisors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:48px}
+.advisor-card{background:var(--stone);padding:32px 24px;transition:transform .2s}
+.advisor-card:hover{transform:translateY(-4px)}
+.advisor-initials{font-family:var(--font-display);font-size:1.8rem;color:var(--leather);margin-bottom:12px;font-weight:600;font-style:italic}
+.advisor-name{font-family:var(--font-mono);font-size:.72rem;font-weight:500;letter-spacing:.1em;margin-bottom:4px}
+.advisor-title{font-size:.66rem;color:var(--dark-stone);letter-spacing:.06em}
+
+/* ── MATERIALS PAGE ── */
+.materials-hero{padding:180px 60px 80px;background:var(--stone)}
+.materials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:4px 60px 80px;background:var(--stone)}
+.material-card{background:var(--cream);padding:48px 36px;position:relative;overflow:hidden;transition:transform .25s}
+.material-card:hover{transform:translateY(-5px)}
+.material-swatch{height:6px;margin-bottom:28px;border-radius:0}
+.material-name{font-family:var(--font-display);font-size:1.6rem;font-weight:400;margin-bottom:10px}
+.material-origin{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--leather);margin-bottom:18px}
+.material-desc{font-size:.72rem;line-height:1.9;color:var(--dark-stone);letter-spacing:.04em;margin-bottom:24px}
+.material-props{display:flex;flex-wrap:wrap;gap:8px}
+.material-prop{background:var(--stone);padding:5px 12px;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dark-stone)}
+.materials-philosophy{background:var(--black);color:var(--cream);padding:100px 60px}
+.philosophy-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.philosophy-text .section-label{color:var(--gold)}
+.philosophy-text .section-label::before{background:var(--gold)}
+.philosophy-text .section-title{color:var(--cream)}
+.philosophy-text .section-title em{color:var(--gold)}
+.philosophy-text p{font-size:.78rem;line-height:2;color:var(--stone);margin-top:20px;letter-spacing:.04em}
+.philosophy-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.philosophy-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:28px;transition:background .2s}
+.philosophy-card:hover{background:rgba(255,255,255,.08)}
+.philosophy-card-icon{font-size:1.6rem;margin-bottom:12px}
+.philosophy-card-title{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.philosophy-card-text{font-size:.7rem;color:var(--stone);line-height:1.8;letter-spacing:.04em}
+
+/* ── FAQ PAGE ── */
+.faq-hero{padding:180px 60px 80px;background:var(--cream)}
+.faq-body{padding:4px 60px 100px;background:var(--cream)}
+.faq-categories{display:grid;grid-template-columns:1fr 3fr;gap:60px;margin-top:40px}
+.faq-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:100px;align-self:start}
+.faq-nav-btn{background:none;border:none;text-align:left;padding:14px 20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dark-stone);cursor:none;transition:all .2s;border-left:2px solid transparent}
+.faq-nav-btn.active,.faq-nav-btn:hover{color:var(--leather);border-left-color:var(--leather);background:rgba(139,94,60,.05)}
+.faq-list{display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--black);overflow:hidden}
+.faq-question{display:flex;justify-content:space-between;align-items:center;padding:28px 32px;cursor:none;transition:background .2s}
+.faq-question:hover{background:rgba(255,255,255,.05)}
+.faq-question h4{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:var(--cream)}
+.faq-toggle{font-size:1.4rem;color:var(--gold);transition:transform .3s;flex-shrink:0;margin-left:20px;line-height:1}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+.faq-answer.open{max-height:300px}
+.faq-answer p{padding:0 32px 28px;font-size:.76rem;line-height:2;color:var(--stone);letter-spacing:.04em}
+.faq-item.open .faq-toggle{transform:rotate(45deg)}
+
+/* ── BLOG PAGE ── */
+.blog-hero{padding:180px 60px 80px;background:var(--black);color:var(--cream)}
+.blog-hero .section-label{color:var(--gold)}
+.blog-hero .section-label::before{background:var(--gold)}
+.blog-hero .section-title{color:var(--cream)}
+.blog-hero .section-title em{color:var(--gold)}
+.blog-hero p{font-size:.8rem;line-height:2;color:var(--stone)}
+.blog-grid-section{background:var(--black);padding:4px 60px 100px}
+.blog-featured{display:grid;grid-template-columns:2fr 1fr;gap:2px;margin-bottom:2px}
+.blog-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:40px;transition:background .25s,transform .25s;cursor:none}
+.blog-card:hover{background:rgba(255,255,255,.08);transform:translateY(-4px)}
+.blog-card.featured{padding:52px}
+.blog-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.blog-title{font-family:var(--font-display);font-size:1.6rem;font-weight:400;color:var(--cream);line-height:1.3;margin-bottom:14px}
+.blog-card.featured .blog-title{font-size:2.1rem}
+.blog-excerpt{font-size:.72rem;line-height:1.9;color:var(--stone);letter-spacing:.04em;margin-bottom:24px}
+.blog-meta{display:flex;gap:20px;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;color:var(--dark-stone);text-transform:uppercase;border-top:1px solid rgba(255,255,255,.08);padding-top:18px}
+.blog-rest{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.newsletter-strip{background:var(--gold);padding:60px;display:flex;justify-content:space-between;align-items:center;gap:40px}
+.newsletter-text h3{font-family:var(--font-display);font-size:1.8rem;font-weight:400;color:var(--black);margin-bottom:8px}
+.newsletter-text p{font-size:.72rem;color:rgba(10,10,8,.7);letter-spacing:.06em}
+.newsletter-form{display:flex;gap:0;flex-shrink:0}
+.newsletter-form input{background:rgba(10,10,8,.12);border:1px solid rgba(10,10,8,.2);color:var(--black);padding:16px 20px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;outline:none;width:280px;cursor:none}
+.newsletter-form input::placeholder{color:rgba(10,10,8,.5)}
+.newsletter-form button{background:var(--black);color:var(--cream);border:none;padding:16px 28px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;cursor:none;transition:background .2s;white-space:nowrap}
+.newsletter-form button:hover{background:var(--leather)}
+
+/* ── CAREERS PAGE ── */
+.careers-hero{padding:180px 60px 80px;background:var(--leather);color:var(--cream)}
+.careers-hero .section-label{color:rgba(245,240,232,.6)}
+.careers-hero .section-label::before{background:rgba(245,240,232,.6)}
+.careers-hero .section-title{color:var(--cream)}
+.careers-hero .section-title em{color:var(--gold)}
+.careers-hero p{font-size:.8rem;line-height:2;color:rgba(245,240,232,.8)}
+.careers-perks{background:var(--cream);padding:80px 60px}
+.perks-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:48px}
+.perk-card{background:var(--stone);padding:36px 28px;transition:transform .2s}
+.perk-card:hover{transform:translateY(-4px)}
+.perk-emoji{font-size:2rem;margin-bottom:16px;display:block}
+.perk-title{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--black);margin-bottom:10px}
+.perk-desc{font-size:.72rem;line-height:1.8;color:var(--dark-stone);letter-spacing:.04em}
+.jobs-section{background:var(--black);padding:80px 60px}
+.jobs-section .section-label{color:var(--gold)}
+.jobs-section .section-label::before{background:var(--gold)}
+.jobs-section .section-title{color:var(--cream)}
+.jobs-section .section-title em{color:var(--gold)}
+.jobs-list{margin-top:48px;display:flex;flex-direction:column;gap:2px}
+.job-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:32px 40px;display:flex;justify-content:space-between;align-items:center;transition:background .2s;cursor:none}
+.job-item:hover{background:rgba(255,255,255,.09)}
+.job-left h4{font-family:var(--font-display);font-size:1.3rem;color:var(--cream);margin-bottom:8px}
+.job-tags{display:flex;gap:10px}
+.job-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border:1px solid rgba(255,255,255,.15);color:var(--stone)}
+.job-tag.remote{border-color:var(--gold);color:var(--gold)}
+.job-arrow{font-size:1.5rem;color:var(--gold);transition:transform .2s}
+.job-item:hover .job-arrow{transform:translateX(6px)}
+.early-cta{background:var(--gold);padding:80px 60px;text-align:center}
+.early-cta h3{font-family:var(--font-display);font-size:2.4rem;font-weight:300;color:var(--black);margin-bottom:16px}
+.early-cta h3 em{font-style:italic;color:var(--leather)}
+.early-cta p{font-size:.78rem;color:rgba(10,10,8,.7);letter-spacing:.06em;margin-bottom:36px}
+
+/* ── FOOTER ── */
+footer{background:var(--black);border-top:1px solid rgba(255,255,255,.08);padding:60px 60px 40px;color:var(--cream)}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px}
+.footer-brand{font-family:var(--font-display);font-size:1.8rem;font-weight:600;margin-bottom:18px}
+.footer-brand span{color:var(--leather);font-style:italic}
+.footer-tagline{font-size:.72rem;color:var(--dark-stone);line-height:1.9;letter-spacing:.06em}
+.footer-col h5{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin-bottom:20px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-col ul a{font-size:.72rem;color:var(--dark-stone);text-decoration:none;letter-spacing:.06em;transition:color .2s;cursor:none}
+.footer-col ul a:hover{color:var(--gold)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid rgba(255,255,255,.06)}
+.footer-copy{font-size:.65rem;color:var(--dark-stone);letter-spacing:.1em}
+.footer-status{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.status-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{padding:20px 24px}
+  nav.scrolled{padding:14px 24px}
+  .nav-links{display:none}
+  .hamburger{display:block}
+  #hero{grid-template-columns:1fr;min-height:auto}
+  .hero-left{padding:120px 24px 60px}
+  .hero-right{display:none}
+  section,.blog-grid-section,.blog-hero,.team-grid,.advisors-section,.materials-grid,.materials-philosophy,.faq-body,.careers-perks,.jobs-section,.early-cta{padding-left:24px!important;padding-right:24px!important}
+  .page-hero,.materials-hero,.faq-hero,.blog-hero,.careers-hero{padding:130px 24px 60px}
+  .about-grid,.services-intro,.contact-grid,.prebook-inner,.vision-grid,.philosophy-inner,.team-divider-inner,.faq-categories,.blog-featured,.newsletter-strip{grid-template-columns:1fr;gap:40px}
+  .process-steps,.team-grid,.materials-grid,.advisors-grid,.perks-grid,.blog-rest{grid-template-columns:1fr}
+  .offerings-grid{grid-template-columns:1fr 1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:40px}
+  .about-values,.culture-stats,.philosophy-grid,.form-row{grid-template-columns:1fr}
+  .prebook-form{padding:32px 24px}
+  .contact-form{padding:32px 24px}
+  .faq-categories{grid-template-columns:1fr}
+  .faq-nav{flex-direction:row;flex-wrap:wrap;position:static}
+  .newsletter-strip{flex-direction:column;text-align:center}
+  .newsletter-form{flex-direction:column;width:100%}
+  .newsletter-form input{width:100%}
+  .job-item{flex-direction:column;align-items:flex-start;gap:16px}
+}
+@media(max-width:500px){
+  .offerings-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr}
+  .hero-stats{gap:28px}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  #disclaimer-box{padding:36px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── DISCLAIMER POPUP ─── -->
+<div id="disclaimer-overlay">
+  <div id="disclaimer-box">
+    <div class="disc-badge">⚠ Important Notice</div>
+    <h2 class="disc-title">This is a <em>fictional</em> project website</h2>
+    <p class="disc-body">
+      SoleCraft and everything on this website — including the brand, products, team, pricing, pre-booking forms, contact details, and company information — are <strong>entirely fictional and for educational/demonstration purposes only.</strong>
+    </p>
+    <ul class="disc-checklist">
+      <li><span class="disc-check">✓</span>No such company, startup, or product actually exists</li>
+      <li><span class="disc-check">✓</span>All forms are non-functional — no data is collected or stored</li>
+      <li><span class="disc-check">✓</span>All team members, advisors, and contact details are made up</li>
+      <li><span class="disc-check">✓</span>Created as a student/learning project for InAmigos Foundation Task 3</li>
+    </ul>
+    <button class="disc-btn" onclick="closeDisclaimer()">I Understand — Take Me to the Website →</button>
+    <p class="disc-footer">This notice appears once per visit. No cookies or personal data are stored.</p>
+  </div>
+</div>
+
+<!-- ─── CURSOR ─── -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ─── NAV ─── -->
+<nav id="nav">
+  <a href="#" class="nav-logo" onclick="showPage('home');return false">Sole<span>Craft</span></a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home');return false">Home</a></li>
+    <li><a href="#" onclick="showPage('team');return false">Team</a></li>
+    <li><a href="#" onclick="showPage('materials');return false">Materials</a></li>
+    <li><a href="#" onclick="showPage('faq');return false">FAQ</a></li>
+    <li><a href="#" onclick="showPage('blog');return false">Updates</a></li>
+    <li><a href="#" onclick="showPage('careers');return false">Careers</a></li>
+    <li><a href="#" onclick="showPage('home');scrollTo('prebook');return false" class="nav-cta">Pre-Book</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" onclick="closeMobileMenu()">✕</button>
+  <a href="#" onclick="showPage('home');closeMobileMenu();return false">Home</a>
+  <a href="#" onclick="showPage('team');closeMobileMenu();return false">Team</a>
+  <a href="#" onclick="showPage('materials');closeMobileMenu();return false">Materials</a>
+  <a href="#" onclick="showPage('faq');closeMobileMenu();return false">FAQ</a>
+  <a href="#" onclick="showPage('blog');closeMobileMenu();return false">Updates</a>
+  <a href="#" onclick="showPage('careers');closeMobileMenu();return false">Careers</a>
+  <a href="#" onclick="showPage('home');scrollTo('prebook');closeMobileMenu();return false" style="color:var(--gold)">Pre-Book →</a>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE: HOME
+════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow fade-in">Launching Soon · Custom Footwear</div>
+      <h1 class="hero-title fade-in fade-delay-1">Every step,<br><em>crafted for you.</em></h1>
+      <p class="hero-sub fade-in fade-delay-2">SoleCraft is a custom shoe manufacturing startup reimagining how footwear is made — built around your design, your size, your story. No compromises.</p>
+      <div class="hero-actions fade-in fade-delay-3">
+        <a href="#" class="btn-primary" onclick="showPage('home');scrollTo('prebook');return false">Reserve Your Pair</a>
+        <a href="#" class="btn-outline" onclick="showPage('team');return false">Meet the Team</a>
+      </div>
+      <div class="hero-stats fade-in fade-delay-4">
+        <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Custom Made</span></div>
+        <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Configurations</span></div>
+        <div class="stat"><span class="stat-num">Early</span><span class="stat-label">Access Open</span></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div style="position:relative;z-index:2">
+        <svg viewBox="0 0 500 500" width="460" height="460" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="500" y2="500" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#C9A84C" stop-opacity=".6"/>
+              <stop offset="100%" stop-color="#8B5E3C" stop-opacity=".4"/>
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <ellipse cx="250" cy="360" rx="160" ry="28" fill="rgba(139,94,60,.25)"/>
+          <path d="M120 310 Q130 240 180 220 Q230 200 290 210 Q360 215 390 250 Q410 275 400 300 Q390 325 350 335 Q290 350 200 345 Q145 340 120 310Z" fill="url(#sg)" stroke="rgba(201,168,76,.4)" stroke-width="1.5"/>
+          <path d="M120 310 Q100 295 105 270 Q110 248 135 238 Q160 228 180 220" stroke="rgba(255,255,255,.2)" stroke-width="1" fill="none"/>
+          <path d="M290 210 Q310 195 330 190 Q355 188 370 200 Q385 212 390 250" fill="rgba(201,168,76,.15)" stroke="rgba(201,168,76,.3)" stroke-width="1"/>
+          <g stroke="rgba(245,240,232,.5)" stroke-width="1.5" stroke-linecap="round">
+            <line x1="200" y1="235" x2="240" y2="230"/><line x1="205" y1="250" x2="245" y2="245"/>
+            <line x1="210" y1="265" x2="250" y2="260"/><line x1="215" y1="280" x2="255" y2="275"/>
+          </g>
+          <path d="M370 200 Q395 205 400 230 Q404 255 400 300 Q395 320 380 330" stroke="rgba(255,255,255,.15)" stroke-width="1" fill="none"/>
+          <path d="M120 310 Q200 345 350 335 Q390 330 400 300" stroke="rgba(201,168,76,.3)" stroke-width="2" fill="none"/>
+          <text x="148" y="290" font-family="'Cormorant Garamond',serif" font-size="13" fill="rgba(255,255,255,.25)" font-style="italic" letter-spacing="2">SC</text>
+          <circle cx="340" cy="215" r="3" fill="#C9A84C" opacity=".7" filter="url(#glow)"/>
+          <circle cx="150" cy="270" r="2" fill="#C9A84C" opacity=".4"/>
+        </svg>
+      </div>
+      <svg width="500" height="500" style="position:absolute;inset:0;opacity:.06" xmlns="http://www.w3.org/2000/svg">
+        <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#F5F0E8" stroke-width=".5"/></pattern></defs>
+        <rect width="500" height="500" fill="url(#grid)"/>
+      </svg>
+      <div class="hero-badge">Est. 2025 · Early Stage</div>
+    </div>
+    <div class="hero-scroll"><div class="scroll-line"></div>Scroll to Explore</div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-inner">
+      <span>Custom Design</span><span>Hand-Selected Materials</span><span>Precision Crafted</span><span>Your Size. Your Style.</span><span>Unique Every Time</span><span>Made on Demand</span><span>Limited Prebook Slots</span><span>Zero Compromise</span>
+      <span>Custom Design</span><span>Hand-Selected Materials</span><span>Precision Crafted</span><span>Your Size. Your Style.</span><span>Unique Every Time</span><span>Made on Demand</span><span>Limited Prebook Slots</span><span>Zero Compromise</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-text fade-in">
+        <div class="section-label">About SoleCraft</div>
+        <h2 class="section-title">Born from a <em>frustration</em> with ordinary shoes</h2>
+        <p>We're a small, ambitious team of footwear obsessives, designers, and material scientists who got tired of settling — for ill-fitting sizes, uninspired designs, and fast-fashion quality that falls apart.</p>
+        <p>SoleCraft is our answer. We're building a platform and manufacturing pipeline that makes fully custom footwear accessible to anyone — not just the ultra-luxury buyer.</p>
+        <p>We're currently in early development and actively taking pre-bookings from our first community of believers. If you've ever wanted a pair of shoes made exactly for you, this is your moment.</p>
+        <div class="about-values">
+          <div class="value-card fade-in fade-delay-1"><div class="value-num">01</div><div class="value-title">Made to Order</div><div class="value-desc">Nothing sits in a warehouse. Every pair starts only after you place your order.</div></div>
+          <div class="value-card fade-in fade-delay-2"><div class="value-num">02</div><div class="value-title">Craft First</div><div class="value-desc">We partner with skilled artisans who treat each pair as a work of function and art.</div></div>
+          <div class="value-card fade-in fade-delay-3"><div class="value-num">03</div><div class="value-title">Transparent</div><div class="value-desc">From materials to manufacturing, we show you exactly what goes into your shoes.</div></div>
+          <div class="value-card fade-in fade-delay-4"><div class="value-num">04</div><div class="value-title">Sustainable</div><div class="value-desc">No overproduction, no unsold inventory — only what's needed, when it's needed.</div></div>
+        </div>
+      </div>
+      <div class="fade-in fade-delay-2">
+        <div class="about-image-frame" style="position:relative">
+          <svg viewBox="0 0 300 400" width="260" height="340" fill="none" xmlns="http://www.w3.org/2000/svg" opacity=".7">
+            <rect x="60" y="80" width="180" height="240" rx="4" fill="none" stroke="rgba(201,168,76,.3)" stroke-width="1"/>
+            <path d="M80 200 Q100 170 140 160 Q180 150 210 170 Q230 185 225 210 Q220 230 190 240 Q150 252 100 245 Q75 238 80 200Z" fill="none" stroke="rgba(245,240,232,.4)" stroke-width="1.5"/>
+            <g stroke="rgba(245,240,232,.3)" stroke-width="1"><line x1="120" y1="167" x2="148" y2="163"/><line x1="123" y1="177" x2="151" y2="173"/><line x1="126" y1="187" x2="154" y2="183"/></g>
+            <line x1="80" y1="260" x2="225" y2="260" stroke="rgba(201,168,76,.3)" stroke-width=".8" stroke-dasharray="4,4"/>
+            <text x="140" y="276" font-family="'DM Mono',monospace" font-size="9" fill="rgba(201,168,76,.6)" text-anchor="middle">YOUR FIT · YOUR SIZE</text>
+            <rect x="90" y="300" width="24" height="14" rx="2" fill="rgba(139,94,60,.5)" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+            <rect x="120" y="300" width="24" height="14" rx="2" fill="rgba(50,50,45,.7)" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+            <rect x="150" y="300" width="24" height="14" rx="2" fill="rgba(201,168,76,.4)" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+            <rect x="180" y="300" width="24" height="14" rx="2" fill="rgba(200,200,185,.4)" stroke="rgba(255,255,255,.2)" stroke-width=".5"/>
+          </svg>
+          <div class="about-tag">Early Stage Startup</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="services">
+    <div class="services-intro">
+      <div>
+        <div class="section-label fade-in">How It Works</div>
+        <h2 class="section-title fade-in fade-delay-1">From your <em>imagination</em><br>to your doorstep</h2>
+      </div>
+      <p class="services-desc fade-in fade-delay-2">Our process is designed to be simple, transparent, and collaborative. You're not just buying shoes — you're co-creating them. Here's how the SoleCraft experience works once we officially launch.</p>
+    </div>
+    <div class="process-steps">
+      <div class="step-card fade-in"><span class="step-num">01</span><span class="step-icon">🎨</span><h3 class="step-title">Design Your Pair</h3><p class="step-desc">Use our design configurator to choose your silhouette, upper material, lining, sole type, colorways, and custom details.</p></div>
+      <div class="step-card fade-in fade-delay-1"><span class="step-num">02</span><span class="step-icon">📐</span><h3 class="step-title">Submit Measurements</h3><p class="step-desc">Send us your exact foot measurements using our guided at-home measurement kit. No generic sizing.</p></div>
+      <div class="step-card fade-in fade-delay-2"><span class="step-num">03</span><span class="step-icon">🔨</span><h3 class="step-title">Crafting Begins</h3><p class="step-desc">Our skilled artisans construct your pair from scratch using the materials and specifications you selected.</p></div>
+      <div class="step-card fade-in fade-delay-1"><span class="step-num">04</span><span class="step-icon">✅</span><h3 class="step-title">Quality Review</h3><p class="step-desc">Before your shoes leave our workshop, they go through rigorous quality inspection. We send photos for your approval.</p></div>
+      <div class="step-card fade-in fade-delay-2"><span class="step-num">05</span><span class="step-icon">📦</span><h3 class="step-title">Delivered to You</h3><p class="step-desc">Your custom pair arrives in thoughtful packaging with care instructions and a profile card documenting every detail.</p></div>
+      <div class="step-card fade-in fade-delay-3" style="background:var(--leather)"><span class="step-num" style="color:rgba(255,255,255,.12)">→</span><span class="step-icon">🎯</span><h3 class="step-title">Coming in 2025</h3><p class="step-desc">Our full configurator and ordering platform is under development. Pre-book now for exclusive early pricing.</p></div>
+    </div>
+  </section>
+
+  <!-- OFFERINGS -->
+  <section id="offerings">
+    <div class="section-label fade-in">What We'll Offer</div>
+    <h2 class="section-title fade-in fade-delay-1">Shoes for every <em>occasion</em></h2>
+    <div class="offerings-grid">
+      <div class="offering-card fade-in"><span class="offering-icon">👟</span><h3 class="offering-name">Custom Sneakers</h3><p class="offering-desc">Streetwear-inspired silhouettes built from premium materials. Design your colorway, choose your sole, pick your lace type.</p><div class="offering-tag">Casual · Streetwear · Sport-Lifestyle</div></div>
+      <div class="offering-card fade-in fade-delay-1"><span class="offering-icon">👞</span><h3 class="offering-name">Formal & Oxford</h3><p class="offering-desc">Hand-stitched dress shoes in full-grain and exotic leathers. Made to fit your exact foot shape for unmatched comfort.</p><div class="offering-tag">Professional · Formal · Events</div></div>
+      <div class="offering-card fade-in fade-delay-2"><span class="offering-icon">🥾</span><h3 class="offering-name">Chelsea & Boots</h3><p class="offering-desc">Structured, weather-resistant boots designed for both rugged terrain and urban life. Customize height, sole, and hardware.</p><div class="offering-tag">Outdoor · Casual · Rugged</div></div>
+      <div class="offering-card fade-in fade-delay-3"><span class="offering-icon">🩴</span><h3 class="offering-name">Loafers & Mules</h3><p class="offering-desc">Effortlessly elegant slip-ons in suede, leather, or canvas. Seasonal designs with your custom touches baked in.</p><div class="offering-tag">Everyday · Comfort · Style</div></div>
+    </div>
+  </section>
+
+  <!-- VISION -->
+  <section id="vision">
+    <div class="section-label fade-in">Our Vision</div>
+    <div class="vision-grid">
+      <div class="vision-quote fade-in fade-delay-1">"We believe every person deserves shoes that <em>fit the way they live</em> — not shoes they adapt to."</div>
+      <div class="vision-points fade-in fade-delay-2">
+        <div class="vision-point"><h4>The Problem We're Solving</h4><p>Mass production serves averages. Millions wear shoes that don't fit well because truly custom options have always been reserved for the wealthy.</p></div>
+        <div class="vision-point"><h4>Our Approach</h4><p>By combining digital design tools, modular manufacturing, and skilled artisans, we're making custom footwear scalable and accessible.</p></div>
+        <div class="vision-point"><h4>Where We're Headed</h4><p>SoleCraft will expand to corporate gifting, sports performance shoes, and orthopedic custom builds. The first chapter is just beginning.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREBOOK -->
+  <section id="prebook">
+    <div class="prebook-inner">
+      <div class="prebook-info">
+        <div class="section-label">Reserve Your Pair</div>
+        <h2 class="section-title">Be among the <em>first.</em></h2>
+        <p class="prebook-desc">We're accepting a limited number of pre-bookings before our official launch. Lock in your spot, secure founding member pricing, and get first access to the design configurator.</p>
+        <ul class="prebook-perks">
+          <li><span class="perk-dot"></span>Priority access to the design configurator and first production run</li>
+          <li><span class="perk-dot"></span>Exclusive founding member pricing — locked before public rates apply</li>
+          <li><span class="perk-dot"></span>Direct input on material library and silhouette options</li>
+          <li><span class="perk-dot"></span>Full refund available anytime before your design session begins</li>
+          <li><span class="perk-dot"></span>Personal design consultation call with our founding team</li>
+          <li><span class="perk-dot"></span>Early access to limited-edition launches and collaborations</li>
+        </ul>
+      </div>
+      <div class="prebook-form fade-in">
+        <div class="form-title">Reserve Your Spot</div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name</label><input type="text" id="pb-fname" placeholder="Your first name"></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="pb-lname" placeholder="Your last name"></div>
+        </div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="pb-email" placeholder="your@email.com"></div>
+        <div class="form-group"><label>Phone (optional)</label><input type="tel" id="pb-phone" placeholder="+1 000 000 0000"></div>
+        <div class="form-group"><label>Interested In</label><select id="pb-type"><option value="">Select a shoe type</option><option>Custom Sneakers</option><option>Formal / Oxford</option><option>Chelsea Boots</option><option>Loafers / Mules</option><option>Multiple Types</option><option>Not sure yet</option></select></div>
+        <div class="form-group"><label>Tell us anything (optional)</label><textarea id="pb-note" placeholder="Any specific ideas, materials, or occasions in mind?"></textarea></div>
+        <button class="form-submit" onclick="handlePrebook()">Secure My Pre-Booking →</button>
+        <div class="success-msg" id="pb-success">✦ &nbsp; Your spot is reserved! We'll be in touch soon with next steps.</div>
+        <p class="form-note">⚠ Demo only — no real data is collected or stored.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-grid">
+      <div>
+        <div class="section-label">Get in Touch</div>
+        <h2 class="section-title">Let's <em>talk shoes.</em></h2>
+        <p class="contact-info-desc">We're a small team and we genuinely love hearing from people. Whether you have questions about pre-booking, partnership ideas, or press inquiries — reach out.</p>
+        <div class="contact-channels">
+          <div class="channel"><span class="channel-icon">✉️</span><div><div class="channel-label">Email</div><div class="channel-value">hello@solecraft.co</div></div></div>
+          <div class="channel"><span class="channel-icon">🐦</span><div><div class="channel-label">Twitter / X</div><div class="channel-value">@solecraftco</div></div></div>
+          <div class="channel"><span class="channel-icon">📸</span><div><div class="channel-label">Instagram</div><div class="channel-value">@solecraft.co</div></div></div>
+          <div class="channel"><span class="channel-icon">💼</span><div><div class="channel-label">LinkedIn</div><div class="channel-value">SoleCraft (Company)</div></div></div>
+        </div>
+      </div>
+      <div class="contact-form fade-in">
+        <div class="form-title">Send a Message</div>
+        <div class="form-group"><label>Full Name</label><input type="text" id="ct-name" placeholder="Your name"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="ct-email" placeholder="your@email.com"></div>
+        <div class="form-group"><label>Subject</label><input type="text" id="ct-subject" placeholder="What's this about?"></div>
+        <div class="form-group"><label>Message</label><textarea id="ct-msg" placeholder="Tell us more..." style="height:120px"></textarea></div>
+        <button class="contact-submit" onclick="handleContact()">Send Message →</button>
+        <div class="success-msg" id="ct-success">✦ &nbsp; Message received! We'll respond within 24–48 hours.</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end page-home -->
+
+<!-- ════════════════════════════════════════
+     PAGE: TEAM
+════════════════════════════════════════ -->
+<div id="page-team" class="page">
+  <div class="page-hero">
+    <div class="section-label">Our People</div>
+    <h1 class="section-title">The <em>minds</em> behind SoleCraft</h1>
+    <p style="margin-top:16px">We're a founding team of four, united by a shared obsession with craft, design, and the belief that footwear can be deeply personal. We're small on purpose — every person here does meaningful work.</p>
+  </div>
+
+  <div class="team-grid">
+    <div class="team-card fade-in">
+      <div class="team-avatar">AK</div>
+      <div class="team-name">Arjun Kapoor</div>
+      <div class="team-role">Co-Founder & CEO</div>
+      <p class="team-bio">Former product manager at a global footwear brand, Arjun spent 7 years watching people compromise on fit and style. He founded SoleCraft to change that. Obsessed with supply chain innovation and customer experience design.</p>
+    </div>
+    <div class="team-card fade-in fade-delay-1">
+      <div class="team-avatar" style="background:var(--dark-stone)">PS</div>
+      <div class="team-name">Priya Sharma</div>
+      <div class="team-role">Co-Founder & Head of Design</div>
+      <p class="team-bio">Trained at a renowned fashion institute with a specialization in footwear construction, Priya brings deep knowledge of materials, ergonomics, and visual identity. Every SoleCraft silhouette starts with her pencil.</p>
+    </div>
+    <div class="team-card fade-in fade-delay-2">
+      <div class="team-avatar" style="background:var(--gold);color:var(--black)">RV</div>
+      <div class="team-name">Rohan Verma</div>
+      <div class="team-role">Co-Founder & CTO</div>
+      <p class="team-bio">Full-stack engineer with a background in manufacturing software and 3D configurator tools. Rohan is building the tech backbone that will eventually let customers design their shoes in real time from any device.</p>
+    </div>
+    <div class="team-card fade-in fade-delay-1">
+      <div class="team-avatar" style="background:#3d3530">MN</div>
+      <div class="team-name">Maya Nair</div>
+      <div class="team-role">Head of Operations & Supply Chain</div>
+      <p class="team-bio">With a background in lean manufacturing and artisan sourcing, Maya manages everything from raw material procurement to quality control. She's the reason each pair meets SoleCraft's exacting standards.</p>
+    </div>
+    <div class="team-card fade-in fade-delay-2">
+      <div class="team-avatar" style="background:#2c3840">SK</div>
+      <div class="team-name">Siddharth Kumar</div>
+      <div class="team-role">Brand & Community Lead</div>
+      <p class="team-bio">Storyteller, community builder, and self-described shoe nerd. Sid shapes SoleCraft's voice and is building the community of early adopters who will define what the brand becomes.</p>
+    </div>
+    <div class="team-card fade-in fade-delay-3">
+      <div class="team-avatar" style="background:var(--leather)">+</div>
+      <div class="team-name">You, Maybe?</div>
+      <div class="team-role">We're Hiring</div>
+      <p class="team-bio">We're a lean team and we're always looking for exceptional people. Check out open roles on our Careers page — or just reach out directly if you believe in what we're building.</p>
+    </div>
+  </div>
+
+  <div class="team-divider">
+    <div class="team-divider-inner">
+      <div class="team-culture-text">
+        <div class="section-label">Our Culture</div>
+        <h2 class="section-title">Small team,<br><em>big ambition</em></h2>
+        <p>We work remotely across two cities, meet in person every month, and share a belief that the best work happens when people have ownership and autonomy. We move fast, debate openly, and never ship something we wouldn't wear ourselves.</p>
+        <p style="margin-top:16px">We're building something we're genuinely proud of — and we want every person involved to feel that pride too.</p>
+      </div>
+      <div class="culture-stats">
+        <div class="culture-stat"><div class="culture-stat-num">5</div><div class="culture-stat-label">Founding Team Members</div></div>
+        <div class="culture-stat"><div class="culture-stat-num">2</div><div class="culture-stat-label">Cities We Operate From</div></div>
+        <div class="culture-stat"><div class="culture-stat-num">100%</div><div class="culture-stat-label">Remote-Flexible</div></div>
+        <div class="culture-stat"><div class="culture-stat-num">0</div><div class="culture-stat-label">Bureaucracy Layers</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="advisors-section">
+    <div class="section-label">Advisors</div>
+    <h2 class="section-title">Guided by <em>experience</em></h2>
+    <div class="advisors-grid">
+      <div class="advisor-card fade-in"><div class="advisor-initials">TR</div><div class="advisor-name">Thomas Richter</div><div class="advisor-title">Former VP Manufacturing, Global Footwear Co.</div></div>
+      <div class="advisor-card fade-in fade-delay-1"><div class="advisor-initials">LM</div><div class="advisor-name">Leila Mansouri</div><div class="advisor-title">D2C Brand Strategist & E-commerce Expert</div></div>
+      <div class="advisor-card fade-in fade-delay-2"><div class="advisor-initials">DK</div><div class="advisor-name">Dev Krishnan</div><div class="advisor-title">Startup Investor & Former Founder (2 exits)</div></div>
+      <div class="advisor-card fade-in fade-delay-3"><div class="advisor-initials">JW</div><div class="advisor-name">Jana Wolff</div><div class="advisor-title">Sustainable Materials Researcher, IIT</div></div>
+    </div>
+  </div>
+  <div id="footer-team"></div>
+</div><!-- end page-team -->
+
+<!-- ════════════════════════════════════════
+     PAGE: MATERIALS
+════════════════════════════════════════ -->
+<div id="page-materials" class="page">
+  <div class="materials-hero">
+    <div class="section-label">Our Materials</div>
+    <h1 class="section-title">Every material,<br><em>chosen with intention</em></h1>
+    <p style="margin-top:16px;font-size:.8rem;line-height:2;color:var(--dark-stone);max-width:600px">We source our materials from responsible suppliers and master tanners around the world. When you design your pair, you're choosing from a curated library we've obsessed over so you don't have to.</p>
+  </div>
+
+  <div class="materials-grid">
+    <div class="material-card fade-in"><div class="material-swatch" style="background:linear-gradient(90deg,#6B3A1F,#8B5E3C,#A0724E)"></div><h3 class="material-name">Full-Grain Leather</h3><div class="material-origin">🇮🇹 Sourced from Italy</div><p class="material-desc">The highest quality leather available — the outermost layer of the hide, strong and naturally water-resistant. Develops a beautiful patina with age and wear.</p><div class="material-props"><span class="material-prop">Premium</span><span class="material-prop">Durable</span><span class="material-prop">Ages Beautifully</span><span class="material-prop">Water Resistant</span></div></div>
+    <div class="material-card fade-in fade-delay-1"><div class="material-swatch" style="background:linear-gradient(90deg,#3d3228,#5a4a3e,#7a6355)"></div><h3 class="material-name">Suede</h3><div class="material-origin">🇪🇸 Sourced from Spain</div><p class="material-desc">Buffed from the inner split of the hide, suede has a soft napped finish that feels luxurious. Best for loafers, mules, and casual sneakers in dry conditions.</p><div class="material-props"><span class="material-prop">Soft Touch</span><span class="material-prop">Luxurious</span><span class="material-prop">Casual</span><span class="material-prop">Varied Colors</span></div></div>
+    <div class="material-card fade-in fade-delay-2"><div class="material-swatch" style="background:linear-gradient(90deg,#d4c4a0,#e8dcc0,#c8b888)"></div><h3 class="material-name">Natural Canvas</h3><div class="material-origin">🇮🇳 Sourced from India</div><p class="material-desc">Breathable, lightweight, and ideal for warm-weather wear. Our canvas is tightly woven and pre-treated for durability. Great for sneakers and espadrille-inspired designs.</p><div class="material-props"><span class="material-prop">Breathable</span><span class="material-prop">Lightweight</span><span class="material-prop">Sustainable</span><span class="material-prop">Casual</span></div></div>
+    <div class="material-card fade-in"><div class="material-swatch" style="background:linear-gradient(90deg,#1a1a1a,#333,#4a4a4a)"></div><h3 class="material-name">Vegan Leather</h3><div class="material-origin">🇩🇪 Sourced from Germany</div><p class="material-desc">High-quality PU-based and plant-derived alternatives that closely mimic the look and feel of genuine leather — without the animal product. Available in all our colorways.</p><div class="material-props"><span class="material-prop">Animal-Free</span><span class="material-prop">Consistent</span><span class="material-prop">Versatile</span><span class="material-prop">Easy Care</span></div></div>
+    <div class="material-card fade-in fade-delay-1"><div class="material-swatch" style="background:linear-gradient(90deg,#2a3a2a,#3d5c3d,#4a7a4a)"></div><h3 class="material-name">Cork & Natural Rubber</h3><div class="material-origin">🇵🇹 Sourced from Portugal</div><p class="material-desc">Used primarily for insoles and outsoles, cork provides natural cushioning and antimicrobial properties. Natural rubber soles offer grip and flexibility without synthetic compounds.</p><div class="material-props"><span class="material-prop">Eco-Friendly</span><span class="material-prop">Cushioning</span><span class="material-prop">Grip</span><span class="material-prop">Renewable</span></div></div>
+    <div class="material-card fade-in fade-delay-2"><div class="material-swatch" style="background:linear-gradient(90deg,#8a7a6a,#a89880,#c4b09a)"></div><h3 class="material-name">Exotic Alternatives</h3><div class="material-origin">🌍 Ethically Curated</div><p class="material-desc">Our premium tier includes ethically sourced exotic textures — embossed prints, bespoke woven fabrics, and specialty finishes. Available for formal and collector-edition builds.</p><div class="material-props"><span class="material-prop">Limited Edition</span><span class="material-prop">Unique</span><span class="material-prop">Premium Tier</span><span class="material-prop">Collector</span></div></div>
+  </div>
+
+  <div class="materials-philosophy">
+    <div class="philosophy-inner">
+      <div class="philosophy-text">
+        <div class="section-label">Our Philosophy</div>
+        <h2 class="section-title">Materials that<br><em>mean something</em></h2>
+        <p>We don't just pick whatever's cheapest or most convenient. Every material in our library has been evaluated on four criteria: quality, traceability, environmental impact, and longevity.</p>
+        <p style="margin-top:16px">We believe the best shoe is one that lasts — and that means starting with materials that were chosen, not just sourced.</p>
+      </div>
+      <div class="philosophy-grid">
+        <div class="philosophy-card"><div class="philosophy-card-icon">🔍</div><div class="philosophy-card-title">Traceable</div><div class="philosophy-card-text">We know exactly where each material comes from and who produced it.</div></div>
+        <div class="philosophy-card"><div class="philosophy-card-icon">🌱</div><div class="philosophy-card-title">Low Impact</div><div class="philosophy-card-text">We prefer suppliers with responsible environmental and labor practices.</div></div>
+        <div class="philosophy-card"><div class="philosophy-card-icon">💪</div><div class="philosophy-card-title">Durable</div><div class="philosophy-card-text">Materials that get better with wear — not ones that fall apart within a year.</div></div>
+        <div class="philosophy-card"><div class="philosophy-card-icon">🎨</div><div class="philosophy-card-title">Beautiful</div><div class="philosophy-card-text">Texture, color, and feel matter. Every material should be a delight to wear.</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-materials"></div>
+</div><!-- end page-materials -->
+
+<!-- ════════════════════════════════════════
+     PAGE: FAQ
+════════════════════════════════════════ -->
+<div id="page-faq" class="page">
+  <div class="faq-hero">
+    <div class="section-label">Got Questions?</div>
+    <h1 class="section-title">Frequently<br><em>Asked Questions</em></h1>
+    <p style="margin-top:16px;font-size:.8rem;line-height:2;color:var(--dark-stone)">Everything you need to know about SoleCraft, the pre-booking process, and what to expect when we launch.</p>
+  </div>
+
+  <div class="faq-body">
+    <div class="faq-categories">
+      <div class="faq-nav">
+        <button class="faq-nav-btn active" onclick="filterFaq('all',this)">All Questions</button>
+        <button class="faq-nav-btn" onclick="filterFaq('prebook',this)">Pre-Booking</button>
+        <button class="faq-nav-btn" onclick="filterFaq('product',this)">Product</button>
+        <button class="faq-nav-btn" onclick="filterFaq('process',this)">Process</button>
+        <button class="faq-nav-btn" onclick="filterFaq('company',this)">Company</button>
+      </div>
+      <div class="faq-list" id="faqList">
+        <div class="faq-item" data-cat="prebook"><div class="faq-question" onclick="toggleFaq(this)"><h4>What does pre-booking mean? Am I paying now?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Pre-booking reserves your spot in our first production run. No payment is required at this stage. You're simply expressing interest and securing priority access. When we're ready to begin design consultations, you'll hear from us first.</p></div></div>
+        <div class="faq-item" data-cat="prebook"><div class="faq-question" onclick="toggleFaq(this)"><h4>Can I cancel my pre-booking?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Absolutely. Since no payment is taken at pre-booking, you can withdraw at any time before your design session begins. Just drop us an email and we'll remove you from the list — no questions asked.</p></div></div>
+        <div class="faq-item" data-cat="prebook"><div class="faq-question" onclick="toggleFaq(this)"><h4>How many pre-booking slots are available?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>We're limiting our first production cohort to 200 pairs. This allows us to give each customer the attention and quality assurance they deserve in our first run. Once those slots fill up, we'll open a waitlist for the second cohort.</p></div></div>
+        <div class="faq-item" data-cat="product"><div class="faq-question" onclick="toggleFaq(this)"><h4>What shoe types will be available at launch?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>For our first production run, we'll offer four core categories: Custom Sneakers, Formal Oxford-style shoes, Chelsea Boots, and Loafers/Mules. Each category will have multiple silhouette options and material/color combinations.</p></div></div>
+        <div class="faq-item" data-cat="product"><div class="faq-question" onclick="toggleFaq(this)"><h4>What's the price range for custom SoleCraft shoes?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Pricing will depend on the materials you select and the complexity of the design. Our target range is ₹8,000–₹28,000 (approximately $100–$350 USD) for standard configurations. Premium and exotic materials will carry additional costs. Founding members will receive the best rates we ever offer.</p></div></div>
+        <div class="faq-item" data-cat="product"><div class="faq-question" onclick="toggleFaq(this)"><h4>How do I get my measurements to you?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>We'll send you a detailed measurement guide once your design session is booked. It's a simple at-home process — you'll need a sheet of paper, a pencil, and a tape measure. For customers in select cities, we'll offer in-person measurement appointments as well.</p></div></div>
+        <div class="faq-item" data-cat="process"><div class="faq-question" onclick="toggleFaq(this)"><h4>How long does it take to make a pair?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Our target production time is 4–6 weeks from design approval to delivery. This includes material sourcing, construction, quality review, and shipping. We'll provide real-time updates throughout the process.</p></div></div>
+        <div class="faq-item" data-cat="process"><div class="faq-question" onclick="toggleFaq(this)"><h4>Do you ship internationally?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>We plan to ship internationally from launch. Initial shipping partners will cover India, the US, UK, EU, UAE, and Australia. If your country isn't listed, reach out — we'll do our best to find a solution.</p></div></div>
+        <div class="faq-item" data-cat="process"><div class="faq-question" onclick="toggleFaq(this)"><h4>What if the shoes don't fit when they arrive?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>We take measurements seriously and our design consultation process is thorough. In the rare case of a fit issue due to our error, we'll remake the pair at no extra charge. We'll work out a detailed fit guarantee policy before launch.</p></div></div>
+        <div class="faq-item" data-cat="company"><div class="faq-question" onclick="toggleFaq(this)"><h4>Are you really a startup? When did you start?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Yes — SoleCraft was founded in 2025 and is currently in pre-launch development. We're a team of five building out our platform, supply chain, and artisan network. We expect to begin first deliveries in late 2025 or early 2026.</p></div></div>
+        <div class="faq-item" data-cat="company"><div class="faq-question" onclick="toggleFaq(this)"><h4>Are you looking for investors or partners?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>We're currently in early conversations with select angel investors. If you're interested in the footwear space and believe in what we're building, we'd love to talk. Reach out via our Contact page with a brief introduction.</p></div></div>
+        <div class="faq-item" data-cat="company"><div class="faq-question" onclick="toggleFaq(this)"><h4>Where are the shoes actually made?</h4><span class="faq-toggle">+</span></div><div class="faq-answer"><p>Our initial manufacturing partners are based in India, with artisans who have decades of experience in bespoke footwear. We're building relationships with additional workshops in Portugal and Italy for premium and formal lines.</p></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-faq"></div>
+</div><!-- end page-faq -->
+
+<!-- ════════════════════════════════════════
+     PAGE: BLOG / UPDATES
+════════════════════════════════════════ -->
+<div id="page-blog" class="page">
+  <div class="blog-hero">
+    <div class="section-label">Latest Updates</div>
+    <h1 class="section-title">From the<br><em>SoleCraft journal</em></h1>
+    <p style="margin-top:16px">We write about the process of building SoleCraft — from sourcing decisions to design philosophy to startup lessons. Follow along as we build in public.</p>
+  </div>
+
+  <div class="blog-grid-section">
+    <div class="blog-featured">
+      <div class="blog-card featured fade-in">
+        <div class="blog-tag">Founder's Note</div>
+        <h2 class="blog-title">Why we're building SoleCraft — and why now</h2>
+        <p class="blog-excerpt">When Arjun spent 7 years watching people buy the closest-to-right shoe they could find, he started asking a simple question: why has custom footwear stayed a luxury reserved for the few? The answer surprised us — and it's exactly the gap we're building to fill.</p>
+        <div class="blog-meta"><span>Arjun Kapoor</span><span>June 2025</span><span>8 min read</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div class="blog-card fade-in fade-delay-1">
+          <div class="blog-tag">Design</div>
+          <h2 class="blog-title" style="font-size:1.3rem">How Priya designs a silhouette from scratch</h2>
+          <p class="blog-excerpt" style="font-size:.7rem">From reference sketches to 3D prototypes — a look inside the design process behind SoleCraft's first four shoe categories.</p>
+          <div class="blog-meta"><span>Priya Sharma</span><span>May 2025</span><span>6 min read</span></div>
+        </div>
+        <div class="blog-card fade-in fade-delay-2">
+          <div class="blog-tag">Supply Chain</div>
+          <h2 class="blog-title" style="font-size:1.3rem">How we found our first artisan partner</h2>
+          <p class="blog-excerpt" style="font-size:.7rem">The story of visiting 14 workshops before finding the right fit. What we looked for, what we rejected, and what we learned.</p>
+          <div class="blog-meta"><span>Maya Nair</span><span>April 2025</span><span>5 min read</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="blog-rest">
+      <div class="blog-card fade-in">
+        <div class="blog-tag">Technology</div>
+        <h2 class="blog-title" style="font-size:1.2rem">Building a shoe configurator: our tech approach</h2>
+        <p class="blog-excerpt" style="font-size:.7rem">Rohan breaks down the technical challenges of making real-time 3D shoe customization accessible and fast.</p>
+        <div class="blog-meta"><span>Rohan Verma</span><span>March 2025</span><span>7 min read</span></div>
+      </div>
+      <div class="blog-card fade-in fade-delay-1">
+        <div class="blog-tag">Materials</div>
+        <h2 class="blog-title" style="font-size:1.2rem">Why we spent 3 months on leather sourcing alone</h2>
+        <p class="blog-excerpt" style="font-size:.7rem">A deep dive into the criteria we use to evaluate material partners — quality, traceability, and long-term viability.</p>
+        <div class="blog-meta"><span>Maya Nair</span><span>February 2025</span><span>9 min read</span></div>
+      </div>
+      <div class="blog-card fade-in fade-delay-2">
+        <div class="blog-tag">Community</div>
+        <h2 class="blog-title" style="font-size:1.2rem">What our first 50 pre-bookers told us</h2>
+        <p class="blog-excerpt" style="font-size:.7rem">We surveyed our earliest community members about what custom footwear means to them. The results were eye-opening.</p>
+        <div class="blog-meta"><span>Siddharth Kumar</span><span>January 2025</span><span>4 min read</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="newsletter-strip">
+    <div class="newsletter-text">
+      <h3>Stay in the loop</h3>
+      <p>New posts, launch updates, and early access announcements — straight to your inbox.</p>
+    </div>
+    <div class="newsletter-form">
+      <input type="email" id="nl-email" placeholder="your@email.com">
+      <button onclick="handleNewsletter()">Subscribe →</button>
+    </div>
+  </div>
+  <div id="footer-blog"></div>
+</div><!-- end page-blog -->
+
+<!-- ════════════════════════════════════════
+     PAGE: CAREERS
+════════════════════════════════════════ -->
+<div id="page-careers" class="page">
+  <div class="careers-hero">
+    <div class="section-label">Join the Team</div>
+    <h1 class="section-title">Build something<br><em>you'll wear.</em></h1>
+    <p style="margin-top:16px">We're a small, focused team at an exciting early stage. If you're passionate about craft, design, and building something from zero — there might be a seat at this table for you.</p>
+  </div>
+
+  <div class="careers-perks">
+    <div class="section-label">Why SoleCraft</div>
+    <h2 class="section-title">What we <em>offer</em></h2>
+    <div class="perks-grid">
+      <div class="perk-card fade-in"><span class="perk-emoji">🏠</span><div class="perk-title">Remote-First</div><p class="perk-desc">Work from anywhere. We value output over office hours and trust you to manage your time.</p></div>
+      <div class="perk-card fade-in fade-delay-1"><span class="perk-emoji">📈</span><div class="perk-title">Meaningful Equity</div><p class="perk-desc">Early team members get real ownership. When we grow, you grow with us.</p></div>
+      <div class="perk-card fade-in fade-delay-2"><span class="perk-emoji">🎓</span><div class="perk-title">Learning Budget</div><p class="perk-desc">Annual budget for courses, conferences, books, and tools. We invest in your growth.</p></div>
+      <div class="perk-card fade-in fade-delay-3"><span class="perk-emoji">👟</span><div class="perk-title">Free Custom Pair</div><p class="perk-desc">Every team member gets a free SoleCraft pair on their first work anniversary.</p></div>
+    </div>
+  </div>
+
+  <div class="jobs-section">
+    <div class="section-label">Open Roles</div>
+    <h2 class="section-title">Currently<br><em>looking for</em></h2>
+    <div class="jobs-list">
+      <div class="job-item fade-in">
+        <div class="job-left">
+          <h4>Senior Frontend Engineer</h4>
+          <div class="job-tags"><span class="job-tag">Engineering</span><span class="job-tag">Full-Time</span><span class="job-tag remote">Remote</span></div>
+        </div>
+        <span class="job-arrow">→</span>
+      </div>
+      <div class="job-item fade-in fade-delay-1">
+        <div class="job-left">
+          <h4>UX / Product Designer</h4>
+          <div class="job-tags"><span class="job-tag">Design</span><span class="job-tag">Full-Time</span><span class="job-tag remote">Remote</span></div>
+        </div>
+        <span class="job-arrow">→</span>
+      </div>
+      <div class="job-item fade-in fade-delay-2">
+        <div class="job-left">
+          <h4>Supply Chain Coordinator</h4>
+          <div class="job-tags"><span class="job-tag">Operations</span><span class="job-tag">Full-Time</span><span class="job-tag">India-Based</span></div>
+        </div>
+        <span class="job-arrow">→</span>
+      </div>
+      <div class="job-item fade-in fade-delay-1">
+        <div class="job-left">
+          <h4>Content & Community Manager</h4>
+          <div class="job-tags"><span class="job-tag">Marketing</span><span class="job-tag">Part-Time</span><span class="job-tag remote">Remote</span></div>
+        </div>
+        <span class="job-arrow">→</span>
+      </div>
+      <div class="job-item fade-in fade-delay-2">
+        <div class="job-left">
+          <h4>Footwear Quality Assurance Specialist</h4>
+          <div class="job-tags"><span class="job-tag">Operations</span><span class="job-tag">Contract</span><span class="job-tag">India-Based</span></div>
+        </div>
+        <span class="job-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="early-cta">
+    <h3>Don't see your role? <em>Reach out anyway.</em></h3>
+    <p>We're always interested in hearing from exceptional people. Send us a note and tell us what you'd build.</p>
+    <a href="#" onclick="showPage('home');scrollTo('contact');return false" class="btn-primary" style="display:inline-block">Send a Note →</a>
+  </div>
+  <div id="footer-careers"></div>
+</div><!-- end page-careers -->
+
+<!-- ─── FOOTER TEMPLATE (injected by JS) ─── -->
+<template id="footer-tpl">
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">Sole<span>Craft</span></div>
+        <p class="footer-tagline">Custom footwear, made for you. We're building the future of personalized shoes — one pair at a time. Join us from the very beginning.<br><br><strong style="color:var(--gold);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase">⚠ Fictional project — for educational purposes only</strong></p>
+      </div>
+      <div class="footer-col"><h5>Pages</h5><ul>
+        <li><a href="#" onclick="showPage('home');return false">Home</a></li>
+        <li><a href="#" onclick="showPage('team');return false">Team</a></li>
+        <li><a href="#" onclick="showPage('materials');return false">Materials</a></li>
+        <li><a href="#" onclick="showPage('faq');return false">FAQ</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>More</h5><ul>
+        <li><a href="#" onclick="showPage('blog');return false">Updates</a></li>
+        <li><a href="#" onclick="showPage('careers');return false">Careers</a></li>
+        <li><a href="#" onclick="showPage('home');scrollTo('prebook');return false">Pre-Book</a></li>
+        <li><a href="#" onclick="showPage('home');scrollTo('contact');return false">Contact</a></li>
+      </ul></div>
+      <div class="footer-col"><h5>Follow</h5><ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Twitter / X</a></li>
+        <li><a href="#">LinkedIn</a></li>
+        <li><a href="#">Newsletter</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 SoleCraft · Fictional project for InAmigos Foundation Task 3 · All content is made up</div>
+      <div class="footer-status"><span class="status-dot"></span>Pre-Bookings Open</div>
+    </div>
+  </footer>
+</template>
+
+<script>
+// ── DISCLAIMER ──
+function closeDisclaimer(){
+  document.getElementById('disclaimer-overlay').style.opacity='0';
+  document.getElementById('disclaimer-overlay').style.transition='opacity .4s ease';
+  setTimeout(()=>document.getElementById('disclaimer-overlay').style.display='none',400);
+}
+
+// ── CURSOR ──
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx-4+'px';cursor.style.top=my-4+'px';});
+function animateRing(){rx+=(mx-rx-18)*.12;ry+=(my-ry-18)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animateRing);}
+animateRing();
+function attachCursorHovers(){
+  document.querySelectorAll('a,button,input,select,textarea').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ring.style.transform='scale(1.8)';ring.style.borderColor='var(--leather)';});
+    el.addEventListener('mouseleave',()=>{ring.style.transform='scale(1)';ring.style.borderColor='var(--black)';});
+  });
+}
+attachCursorHovers();
+
+// ── NAV SCROLL ──
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>60));
+
+// ── MOBILE MENU ──
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('mobileMenu').classList.add('open'));
+function closeMobileMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+// ── FADE-IN OBSERVER ──
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:.1});
+function observeFadeIns(){document.querySelectorAll('.fade-in:not(.visible)').forEach(el=>observer.observe(el));}
+observeFadeIns();
+
+// ── PAGE ROUTING ──
+const pages=['home','team','materials','faq','blog','careers'];
+function showPage(id){
+  pages.forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el) el.classList.toggle('active',p===id);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  injectFooter(id);
+  setTimeout(()=>{observeFadeIns();attachCursorHovers();},100);
+}
+
+function scrollTo(sectionId){
+  setTimeout(()=>{
+    const el=document.getElementById(sectionId);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+  },120);
+}
+
+// ── FOOTER INJECTION ──
+function injectFooter(pageId){
+  const tpl=document.getElementById('footer-tpl');
+  const targets=['home','team','materials','faq','blog','careers'];
+  targets.forEach(p=>{
+    const slot=document.getElementById('footer-'+p);
+    if(slot){slot.innerHTML='';const clone=tpl.content.cloneNode(true);slot.appendChild(clone);}
+  });
+}
+// Inject footer into home page on load (home has inline sections, footer appended at end)
+document.addEventListener('DOMContentLoaded',()=>{
+  // For home page, append footer after last section
+  const homeFooterSlot=document.createElement('div');
+  homeFooterSlot.id='footer-home-slot';
+  const homePage=document.getElementById('page-home');
+  if(homePage){homePage.appendChild(homeFooterSlot);}
+  injectFooter('home');
+  observeFadeIns();
+});
+
+// ── FORMS ──
+function handlePrebook(){
+  const email=document.getElementById('pb-email').value.trim();
+  const fname=document.getElementById('pb-fname').value.trim();
+  if(!fname||!email||!email.includes('@')){alert('Please fill in your name and a valid email.');return;}
+  document.getElementById('pb-success').style.display='block';
+  document.querySelector('.form-submit').style.display='none';
+}
+function handleContact(){
+  const email=document.getElementById('ct-email').value.trim();
+  const name=document.getElementById('ct-name').value.trim();
+  const msg=document.getElementById('ct-msg').value.trim();
+  if(!name||!email||!msg){alert('Please fill in your name, email, and message.');return;}
+  document.getElementById('ct-success').style.display='block';
+  document.querySelector('.contact-submit').style.display='none';
+}
+function handleNewsletter(){
+  const email=document.getElementById('nl-email').value.trim();
+  if(!email||!email.includes('@')){alert('Please enter a valid email address.');return;}
+  const btn=document.querySelector('.newsletter-form button');
+  btn.textContent='Subscribed ✓';
+  btn.style.background='var(--leather)';
+  document.getElementById('nl-email').disabled=true;
+}
+
+// ── FAQ ──
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item');
+  const answer=item.querySelector('.faq-answer');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.faq-answer').classList.remove('open');});
+  if(!isOpen){item.classList.add('open');answer.classList.add('open');}
+}
+function filterFaq(cat,btn){
+  document.querySelectorAll('.faq-nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    item.style.display=(cat==='all'||item.dataset.cat===cat)?'block':'none';
+  });
+}
+</script>
+</body>
+</html>
